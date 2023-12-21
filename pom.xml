@@ -77,11 +77,6 @@
 			<version>${spring.version}</version>
 		</dependency>
 
-		<dependency>
-    <groupId>org.sonarsource.sonarqube</groupId>
-    <artifactId>sonar-plugin-api</artifactId>
-    <version>7.8</version>
-</dependency>		
 		<!-- provided dependencies -->
 
 		<dependency>
@@ -143,6 +138,12 @@
 					<wtpContextName>maven-web-application</wtpContextName>
 				</configuration>
 			</plugin>
+
+			<plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>3.8.0.2131</version>
+      </plugin>
 
 			
 </plugins>
