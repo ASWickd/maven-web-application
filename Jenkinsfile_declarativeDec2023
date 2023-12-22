@@ -1,0 +1,86 @@
+pipeline{
+    agent any
+    tools{
+        maven 'maven3.9.6'
+    }
+    stages{
+        stage('1.CloneCode'){
+            steps{
+                sh "echo 'cloning started'"
+                git "https://github.com/ASWickd/maven-web-application.git"
+                sh "echo 'cloning completed'"
+            }
+        }
+        stage('2.Build'){
+            steps{
+                sh "echo 'build started'"
+                sh "mvn clean package"
+                sh "echo 'build completed'"
+            }
+        }
+        stage('3.CodeQuality'){
+            steps{
+                sh "echo 'sonarqube code quality started'"
+                sh "mvn sonar:sonar"
+                sh "echo 'code quality completed'"
+            }
+        }
+        stage('4.UploadArtifacts'){
+            steps{
+                sh "echo 'nexus upload started'"
+                sh "mvn sonar:sonar"
+                sh "echo 'artifacts upload completed'"
+            }
+        }
+        stage('5.Deploy2UAT'){
+            steps{
+                sh "echo 'tomcat deployment started'"
+                deploy adapters: [tomcat9(credentialsId: 'tomcatcred', path: '', url: 'http://172.31.16.175:8088/')], contextPath: null, war: 'target/*war'
+                sh "echo 'tomcat deployment completed'"
+            }
+        }
+        stage('6.ManualApproval'){
+            steps{
+                sh "echo 'Code Review'"
+                timeout(time: 4, unit: 'HOURS') {
+                input message: 'Please review and approve within 5 hours'
+                }
+            }
+        }
+        stage('7.Deploy2Prod'){
+            steps{
+                sh "echo 'prod deployment started'"
+                deploy adapters: [tomcat9(credentialsId: 'tomcatcred', path: '', url: 'http://172.31.16.175:8088/')], contextPath: null, war: 'target/*war'
+                sh "echo 'prod deployment completed'"
+            }
+        }
+        stage('8.AppPerformanceMonitoring'){
+            steps{
+                sh "echo 'Monitoring with Prometheus'"
+            }
+        }
+    }
+    post{
+        always{
+            emailext body: '''FYA.
+
+Regards,
+
+Joseph''', recipientProviders: [buildUser(), contributor(), developers(), upstreamDevelopers()], subject: 'BUILD STATUS', to: 'aeternityprestige@gmail.com'
+        }
+        success{
+            emailext body: '''FYA.
+
+Regards,
+
+Joseph''', recipientProviders: [buildUser(), contributor(), developers(), upstreamDevelopers()], subject: 'BUILD SUCCEEDED', to: 'aeternityprestige@gmail.com'
+        }
+        failure{
+            emailext body: '''FYA.
+
+Regards,
+
+Joseph''', recipientProviders: [buildUser(), contributor(), developers(), upstreamDevelopers()], subject: 'BUILD FAILED', to: 'aeternityprestige@gmail.com'
+        }
+    }
+}
