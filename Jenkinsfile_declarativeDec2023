@@ -28,7 +28,7 @@ pipeline{
         stage('4.UploadArtifacts'){
             steps{
                 sh "echo 'nexus upload started'"
-                sh "mvn sonar:sonar"
+                sh "mvn deploy"
                 sh "echo 'artifacts upload completed'"
             }
         }
