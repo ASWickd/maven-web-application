@@ -36,6 +36,7 @@ pipeline{
             steps{
                 sh "echo 'tomcat deployment started'"
                 deploy adapters: [tomcat9(credentialsId: 'tomcatcred', path: '', url: 'http://172.31.16.175:8088/')], contextPath: null, war: 'target/*war'
+                deploy adapters: [tomcat9(credentialsId: 'landmarktomcatcred', path: '', url: 'http://172.31.32.224:8088/')], contextPath: null, war: 'target/*war'
                 sh "echo 'tomcat deployment completed'"
             }
         }
@@ -51,6 +52,7 @@ pipeline{
             steps{
                 sh "echo 'prod deployment started'"
                 deploy adapters: [tomcat9(credentialsId: 'tomcatcred', path: '', url: 'http://172.31.16.175:8088/')], contextPath: null, war: 'target/*war'
+                deploy adapters: [tomcat9(credentialsId: 'landmarktomcatcred', path: '', url: 'http://172.31.32.224:8088/')], contextPath: null, war: 'target/*war'
                 sh "echo 'prod deployment completed'"
             }
         }
